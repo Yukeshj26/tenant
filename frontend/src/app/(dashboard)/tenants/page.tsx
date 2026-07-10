@@ -1,8 +1,8 @@
 "use client";
 // Tenants list page — search, filter, risk badges, pagination
 
-import React, { useEffect, useState } from "react";
-import { tenantsAPI } from "@/lib/api";
+import React, { useEffect, useState, useRef } from "react";
+import { tenantsAPI, uploadAPI } from "@/lib/api";
 import Link from "next/link";
 import { Search, Plus, ChevronRight, Upload, ExternalLink, FileText, UserPlus, LogIn, CheckCircle2 } from "lucide-react";
 
@@ -30,6 +30,10 @@ export default function TenantsPage() {
   const [search, setSearch] = useState("");
   const [skip, setSkip] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [csvStatus, setCsvStatus] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const limit = 15;
 
   const fetchTenants = async () => {
@@ -54,6 +58,31 @@ export default function TenantsPage() {
 
   useEffect(() => { fetchTenants(); }, [skip, search]);
 
+  const handleCSVUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setCsvStatus(null);
+
+    try {
+      const res = await uploadAPI.uploadCSV(file);
+      setCsvStatus({
+        type: "success",
+        text: res.data.message || "CSV tenants imported successfully!",
+      });
+      fetchTenants();
+    } catch (err: any) {
+      setCsvStatus({
+        type: "error",
+        text: err?.response?.data?.detail ?? "Failed to import CSV. Ensure columns match format.",
+      });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <div className="fade-in-up">
       {/* Header */}
@@ -64,14 +93,39 @@ export default function TenantsPage() {
           <p className="page-subtitle">{total} total records</p>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
-          <button className="btn-secondary" id="upload-csv-btn">
-            <Upload size={15} /> Import CSV
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".csv"
+            style={{ display: "none" }}
+            onChange={handleCSVUpload}
+          />
+          <button 
+            className="btn-secondary" 
+            id="upload-csv-btn"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            <Upload size={15} /> {uploading ? "Importing..." : "Import CSV"}
           </button>
           <Link href="/tenants/new" className="btn-primary" id="add-tenant-link">
             <Plus size={15} /> Add Tenant
           </Link>
         </div>
       </div>
+
+      {/* CSV Import Feedback Alert */}
+      {csvStatus && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: 8, padding: "0.75rem 1.25rem", borderRadius: 12,
+          fontSize: "0.85rem", fontWeight: 500, marginBottom: "1.25rem",
+          background: csvStatus.type === "success" ? "rgba(78, 122, 84, 0.12)" : "rgba(196, 78, 70, 0.08)",
+          color: csvStatus.type === "success" ? "var(--sage-dark)" : "#b83c36",
+          border: `1px solid ${csvStatus.type === "success" ? "rgba(78, 122, 84, 0.2)" : "rgba(196, 78, 70, 0.2)"}`
+        }}>
+          {csvStatus.text}
+        </div>
+      )}
 
       {/* TN Government Portal Banner */}
       <div style={{
