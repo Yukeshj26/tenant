@@ -171,4 +171,4 @@ MIT License — see [LICENSE](LICENSE)
 - [ ] IoT smart building integration
 - [ ] Blockchain-based lease contracts
 - [ ] Digital Twin property simulation
-- [ ] WhatsApp / SMS alert integration
+- [ ] WhatsApp / SMS alert integration.
