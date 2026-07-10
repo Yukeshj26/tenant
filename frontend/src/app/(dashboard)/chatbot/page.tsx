@@ -8,6 +8,11 @@ import { Send, Bot, User, Loader2, Trash2, Mic, MicOff } from "lucide-react";
 
 interface Message { role: "user" | "bot"; text: string; timestamp: string; }
 
+// Web Speech API typescript declarations
+type SpeechRecognition = any;
+type SpeechRecognitionEvent = any;
+type SpeechRecognitionErrorEvent = any;
+
 // Map app language codes → BCP-47 locales for SpeechRecognition
 const LANG_LOCALE: Record<string, string> = {
   en: "en-IN",
