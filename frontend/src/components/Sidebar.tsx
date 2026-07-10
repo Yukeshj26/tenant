@@ -18,7 +18,6 @@ const navItems = [
   { href: "/retention",   label: "Retention",     icon: Shield          },
   { href: "/analytics",   label: "Analytics",     icon: BarChart3       },
   { href: "/chatbot",     label: "AI Assistant",  icon: MessageSquare   },
-  { href: "/settings",    label: "Settings",      icon: Settings        },
 ];
 
 export default function Sidebar() {
