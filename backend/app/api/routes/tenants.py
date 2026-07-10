@@ -102,6 +102,21 @@ async def create_tenant(payload: TenantCreate, db: AsyncSession = Depends(get_db
     db.add(tenant)
     await db.commit()
     await db.refresh(tenant)
+
+    # Automatically create a default Prediction record with 0% risk score
+    from app.models.prediction import Prediction
+    prediction = Prediction(
+        tenant_id=tenant.id,
+        risk_score=0.0,
+        will_not_renew=False,
+        risk_level="low",
+        shap_values={},
+        feature_inputs={},
+        model_version="1.0.0"
+    )
+    db.add(prediction)
+    await db.commit()
+
     return _tenant_to_dict(tenant)
 
 
@@ -163,6 +178,20 @@ async def register_tenant_form(
             await db.commit()
             pg_tenant_id = new_tenant.id
             pg_created = True
+
+            # Automatically create a default Prediction record with 0% risk score
+            from app.models.prediction import Prediction
+            prediction = Prediction(
+                tenant_id=pg_tenant_id,
+                risk_score=0.0,
+                will_not_renew=False,
+                risk_level="low",
+                shap_values={},
+                feature_inputs={},
+                model_version="1.0.0"
+            )
+            db.add(prediction)
+            await db.commit()
 
         # Now check if we can create a corresponding Lease in Postgres
         if pg_tenant_id:
