@@ -22,6 +22,16 @@ class Settings(BaseSettings):
     # PostgreSQL
     DATABASE_URL: str = "postgresql+asyncpg://tenantsense:password@localhost:5432/tenantsense_db"
 
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def validate_database_url(cls, v: str) -> str:
+        if isinstance(v, str):
+            if v.startswith("postgresql://"):
+                return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+            elif v.startswith("postgres://"):
+                return v.replace("postgres://", "postgresql+asyncpg://", 1)
+        return v
+
     # MongoDB
     MONGO_URL: str = "mongodb://tenantsense:password@localhost:27017/tenantsense_logs"
     MONGO_DB: str = "tenantsense_logs"
