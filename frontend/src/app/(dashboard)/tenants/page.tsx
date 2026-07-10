@@ -215,9 +215,9 @@ export default function TenantsPage() {
               {["Tenant", "City", "Property", "Language", "Risk Level", "Satisfaction", ""].map((h) => (
                 <th key={h} style={{
                   padding: "0.875rem 1.25rem", textAlign: "left",
-                  fontSize: "0.7rem", fontWeight: 700, color: "#888880",
+                  fontSize: "0.72rem", fontWeight: 700, color: "var(--charcoal-soft)",
                   letterSpacing: "0.08em", textTransform: "uppercase",
-                  background: "#faf7f2",
+                  background: "var(--cream)",
                 }}>
                   {h}
                 </th>
@@ -239,15 +239,15 @@ export default function TenantsPage() {
               const risk = getRiskLevel(t.engagement_score, t.satisfaction_score);
               return (
                 <tr key={t.id} style={{ borderBottom: "1px solid rgba(44,44,44,0.06)", transition: "background 0.15s" }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(122,158,126,0.05)")}
+                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(122,158,126,0.06)")}
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                   <td style={{ padding: "1rem 1.25rem" }}>
-                    <div style={{ fontWeight: 600, fontSize: "0.88rem", marginBottom: 2, color: "#2c2c2c" }}>{t.full_name}</div>
-                    <div style={{ fontSize: "0.73rem", color: "#888880" }}>{t.email}</div>
+                    <div style={{ fontWeight: 700, fontSize: "0.88rem", marginBottom: 2, color: "var(--charcoal)" }}>{t.full_name}</div>
+                    <div style={{ fontSize: "0.73rem", color: "var(--charcoal-soft)", fontWeight: 500 }}>{t.email}</div>
                   </td>
-                  <td style={{ padding: "1rem 1.25rem", fontSize: "0.85rem", color: "#444444" }}>{t.city}</td>
-                  <td style={{ padding: "1rem 1.25rem", fontSize: "0.85rem", color: "#444444" }}>{t.property_type}</td>
-                  <td style={{ padding: "1rem 1.25rem", fontSize: "0.82rem", color: "#888880" }}>{t.preferred_language}</td>
+                  <td style={{ padding: "1rem 1.25rem", fontSize: "0.85rem", color: "var(--charcoal)", fontWeight: 500 }}>{t.city}</td>
+                  <td style={{ padding: "1rem 1.25rem", fontSize: "0.85rem", color: "var(--charcoal)", fontWeight: 500 }}>{t.property_type}</td>
+                  <td style={{ padding: "1rem 1.25rem", fontSize: "0.85rem", color: "var(--charcoal-soft)", fontWeight: 500 }}>{t.preferred_language}</td>
                   <td style={{ padding: "1rem 1.25rem" }}>
                     <span className={`badge-${risk}`}>
                       <span style={{ width: 6, height: 6, borderRadius: "50%", background: RISK_COLORS[risk] }} />
@@ -255,13 +255,13 @@ export default function TenantsPage() {
                     </span>
                   </td>
                   <td style={{ padding: "1rem 1.25rem", fontSize: "0.85rem" }}>
-                    <span style={{ color: t.satisfaction_score >= 7 ? "#4e7a54" : t.satisfaction_score >= 5 ? "#c4a44a" : "#c4714a", fontWeight: 600 }}>
+                    <span style={{ color: t.satisfaction_score >= 7 ? "var(--sage-dark)" : t.satisfaction_score >= 5 ? "#9a6400" : "#b83c36", fontWeight: 700 }}>
                       {t.satisfaction_score.toFixed(1)}/10
                     </span>
                   </td>
                   <td style={{ padding: "1rem 1.25rem" }}>
                     <Link href={`/tenants/${t.id}`} id={`view-tenant-${t.id}`}
-                      style={{ color: "#4e7a54", fontSize: "0.82rem", fontWeight: 700, textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
+                      style={{ color: "var(--sage-dark)", fontSize: "0.82rem", fontWeight: 700, textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
                       View <ChevronRight size={14} />
                     </Link>
                   </td>
