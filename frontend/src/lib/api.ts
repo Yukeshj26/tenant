@@ -7,7 +7,11 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 export const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
   timeout: 60000, // 60s — batch predictions can take time
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+    // Required for localtunnel: bypasses the 511 "Network Authentication Required" verification page
+    "bypass-tunnel-reminder": "true",
+  },
 });
 
 // ─── Tenants ─────────────────────────────────────────────────────────────────
