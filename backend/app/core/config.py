@@ -27,9 +27,11 @@ class Settings(BaseSettings):
     def validate_database_url(cls, v: str) -> str:
         if isinstance(v, str):
             if v.startswith("postgresql://"):
-                return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+                v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
             elif v.startswith("postgres://"):
-                return v.replace("postgres://", "postgresql+asyncpg://", 1)
+                v = v.replace("postgres://", "postgresql+asyncpg://", 1)
+            # asyncpg doesn't support 'sslmode', but supports 'ssl=require'
+            v = v.replace("sslmode=require", "ssl=require")
         return v
 
     # MongoDB
