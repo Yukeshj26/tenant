@@ -309,20 +309,25 @@ export default function TenantDetailPage() {
       </div>
 
       {prediction && (
-        <div className="glass-card" style={{ marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "2.5rem", flexWrap: "wrap" }}>
+        <div className="glass-card" style={{ marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "2rem", flexWrap: "wrap" }}>
           <RiskGauge score={prediction.risk_score_pct} size={180} />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.5rem", flex: 1 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "0", flex: 1, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)" }}>
             {[
-              { label: "Engagement", value: `${(tenant.engagement_score * 100).toFixed(0)}%`, color: tenant.engagement_score > 0.6 ? "hsl(142,70%,50%)" : "hsl(38,95%,58%)" },
-              { label: "Satisfaction", value: `${tenant.satisfaction_score.toFixed(1)}/10`, color: tenant.satisfaction_score >= 7 ? "hsl(142,70%,50%)" : "hsl(38,95%,58%)" },
-              { label: "Portal Logins", value: tenant.portal_logins_last_30d, color: "hsl(214,100%,65%)" },
-              { label: "Complaints", value: tenant.complaints_filed, color: tenant.complaints_filed > 2 ? "hsl(0,85%,60%)" : "hsl(215,20%,65%)" },
-              { label: "Sentiment", value: tenant.sentiment_score.toFixed(2), color: tenant.sentiment_score > 0 ? "hsl(142,70%,50%)" : "hsl(0,85%,60%)" },
-              { label: "Preferred Lang", value: tenant.preferred_language, color: "hsl(215,20%,70%)" },
-            ].map(({ label, value, color }) => (
-              <div key={label}>
-                <div style={{ fontSize: "0.72rem", color: "hsl(215,20%,55%)", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
-                <div style={{ fontSize: "1.15rem", fontWeight: 700, color }}>{value}</div>
+              { label: "ENGAGEMENT", value: `${(tenant.engagement_score * 100).toFixed(0)}%`, color: tenant.engagement_score > 0.6 ? "hsl(142,70%,50%)" : "hsl(38,95%,58%)" },
+              { label: "SATISFACTION", value: `${tenant.satisfaction_score.toFixed(1)}/10`, color: tenant.satisfaction_score >= 7 ? "hsl(142,70%,50%)" : "hsl(38,95%,58%)" },
+              { label: "PORTAL LOGINS", value: tenant.portal_logins_last_30d, color: "hsl(214,100%,65%)" },
+              { label: "COMPLAINTS", value: tenant.complaints_filed, color: tenant.complaints_filed > 2 ? "hsl(0,85%,60%)" : "hsl(215,20%,65%)" },
+              { label: "SENTIMENT", value: tenant.sentiment_score.toFixed(2), color: tenant.sentiment_score > 0 ? "hsl(142,70%,50%)" : "hsl(0,85%,60%)" },
+              { label: "PREFERRED LANG", value: tenant.preferred_language, color: "hsl(215,20%,85%)" },
+            ].map(({ label, value, color }, idx) => (
+              <div key={label} style={{
+                padding: "1.1rem 1.25rem",
+                borderRight: idx % 3 !== 2 ? "1px solid rgba(255,255,255,0.07)" : "none",
+                borderBottom: idx < 3 ? "1px solid rgba(255,255,255,0.07)" : "none",
+                background: "hsl(222,35%,14%)",
+              }}>
+                <div style={{ fontSize: "0.65rem", color: "hsl(215,20%,48%)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>{label}</div>
+                <div style={{ fontSize: "1.2rem", fontWeight: 700, color, lineHeight: 1 }}>{value}</div>
               </div>
             ))}
           </div>
@@ -368,17 +373,33 @@ export default function TenantDetailPage() {
 
       {activeTab === "overview" && (
         <div className="glass-card">
-          <h2 style={{ fontSize: "0.95rem", fontWeight: 600, marginBottom: "1rem" }}>Tenant Profile</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+          <h2 style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: "1.25rem", color: "hsl(210,40%,92%)" }}>Tenant Profile</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.875rem" }}>
             {[
-              { label: "Property Type", value: tenant.property_type, icon: <Home size={14} /> },
-              { label: "Age", value: tenant.tenant_age || "N/A", icon: <User size={14} /> },
-              { label: "Communication Score", value: `${(tenant.communication_score * 100).toFixed(0)}%`, icon: <MessageSquare size={14} /> },
-              { label: "Response Rate", value: tenant.response_rate ? `${(tenant.response_rate * 100).toFixed(0)}%` : "N/A", icon: <Activity size={14} /> },
-            ].map(({ label, value, icon }) => (
-              <div key={label} style={{ background: "hsl(222,35%,14%)", borderRadius: 10, padding: "0.875rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, color: "hsl(215,20%,55%)", fontSize: "0.73rem" }}>{icon}{label}</div>
-                <div style={{ fontWeight: 600, fontSize: "1rem" }}>{value}</div>
+              { label: "Property Type", value: tenant.property_type || "N/A", icon: <Home size={15} />, accent: "hsl(214,100%,65%)" },
+              { label: "Age", value: tenant.tenant_age ? `${tenant.tenant_age} yrs` : "N/A", icon: <User size={15} />, accent: "hsl(262,80%,70%)" },
+              { label: "Communication Score", value: `${(tenant.communication_score * 100).toFixed(0)}%`, icon: <MessageSquare size={15} />, accent: "hsl(142,70%,55%)" },
+              { label: "Response Rate", value: tenant.response_rate ? `${(tenant.response_rate * 100).toFixed(0)}%` : "N/A", icon: <Activity size={15} />, accent: "hsl(38,95%,60%)" },
+            ].map(({ label, value, icon, accent }) => (
+              <div key={label} style={{
+                background: "hsl(222,35%,13%)",
+                borderRadius: 12,
+                padding: "1.125rem 1.25rem",
+                border: "1px solid rgba(255,255,255,0.07)",
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+              }}>
+                <div style={{
+                  width: 34, height: 34, borderRadius: 9,
+                  background: `${accent}22`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: accent,
+                }}>{icon}</div>
+                <div>
+                  <div style={{ fontSize: "0.7rem", color: "hsl(215,20%,48%)", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 600 }}>{label}</div>
+                  <div style={{ fontWeight: 700, fontSize: "1.1rem", color: "hsl(210,40%,92%)", letterSpacing: "-0.01em" }}>{value}</div>
+                </div>
               </div>
             ))}
           </div>
