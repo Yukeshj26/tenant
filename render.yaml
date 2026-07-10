@@ -1,0 +1,106 @@
+##############################################################################
+# render.yaml — TenantSense AI Backend
+# Render Infrastructure-as-Code configuration
+# Docs: https://render.com/docs/infrastructure-as-code
+##############################################################################
+
+services:
+  # ─── FastAPI Web Service ──────────────────────────────────────────────────
+  - type: web
+    name: tenantsense-backend
+    runtime: python
+    region: oregon          # Choose: oregon | frankfurt | singapore | ohio
+    plan: starter           # Minimum for heavy ML deps (torch, transformers, etc.)
+    rootDir: .              # Repo root so machine_learning/ is accessible
+
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+
+    startCommand: bash backend/start.sh
+
+    healthCheckPath: /health
+
+    envVars:
+      # ── App ──────────────────────────────────────────────────────────────
+      - key: APP_NAME
+        value: TenantSense AI
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: APP_SECRET_KEY
+        generateValue: true   # Render auto-generates a secure random value
+
+      # ── PostgreSQL ────────────────────────────────────────────────────────
+      # Option A: Use Render's managed PostgreSQL (add a `databases` block below
+      #           and reference it here with fromDatabase).
+      # Option B: Use an external provider like Neon.tech → paste the URL below.
+      - key: DATABASE_URL
+        sync: false           # Set manually in Render dashboard
+
+      # ── MongoDB ───────────────────────────────────────────────────────────
+      # Use MongoDB Atlas free tier: https://cloud.mongodb.com
+      - key: MONGO_URL
+        sync: false           # Set manually in Render dashboard
+      - key: MONGO_DB
+        value: tenantsense_logs
+
+      # ── Redis ─────────────────────────────────────────────────────────────
+      # Use Upstash Redis free tier: https://upstash.com
+      # Or Render Redis (paid add-on)
+      - key: REDIS_URL
+        sync: false
+      - key: CELERY_BROKER_URL
+        sync: false
+
+      # ── JWT ───────────────────────────────────────────────────────────────
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: JWT_REFRESH_TOKEN_EXPIRE_DAYS
+        value: "7"
+
+      # ── Google Gemini ─────────────────────────────────────────────────────
+      - key: GEMINI_API_KEY
+        sync: false           # Set manually in Render dashboard
+      - key: GEMINI_MODEL
+        value: gemini-1.5-flash
+
+      # ── ML Model Paths ────────────────────────────────────────────────────
+      - key: ML_MODEL_PATH
+        value: machine_learning/models/xgboost_model.pkl
+      - key: ML_SCALER_PATH
+        value: machine_learning/models/scaler.pkl
+      - key: ML_THRESHOLD
+        value: "0.5"
+
+      # ── CORS ──────────────────────────────────────────────────────────────
+      # Replace <your-vercel-url> with your actual Vercel deployment URL
+      # e.g. https://tenantsense.vercel.app,https://tenantsense-ai.vercel.app
+      - key: ALLOWED_ORIGINS
+        value: "https://your-app.vercel.app"  # Update after Vercel deploy
+
+      # ── Email ─────────────────────────────────────────────────────────────
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+
+
+# ─── Optional: Render-managed PostgreSQL ─────────────────────────────────────
+# Uncomment this block to provision a Render PostgreSQL database.
+# After adding it, update the DATABASE_URL envVar above to use fromDatabase.
+#
+# databases:
+#   - name: tenantsense-db
+#     databaseName: tenantsense_db
+#     user: tenantsense
+#     plan: free
